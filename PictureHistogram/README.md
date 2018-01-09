@@ -7,7 +7,8 @@
 计算机视觉领域常借助图像直方图来实现图像的二值化。
 
 # 测试demo
+```
 python script/PictureHistogram.py 测试图片
-
 eg：
 python script/PictureHistogram.py ./data/test.jpg
+```

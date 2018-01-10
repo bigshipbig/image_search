@@ -60,14 +60,14 @@ class PictureHistogram():
         @Brief: draw rgb histogram
         """
         range_num = int(256/range_size) if 256 % range_size == 0 else int(256/range_size) + 1
-        gray_image = np.array(self.image)
+        rgb_image = np.array(self.image)
         color_dis = np.zeros((3,range_num))
-        shape = gray_image.shape
+        shape = rgb_image.shape
         for raw in range(shape[0]):
             for col in range(shape[1]):
-                range_id1 = int(gray_image[raw][col][0]/range_size)
-                range_id2 = int(gray_image[raw][col][1]/range_size)
-                range_id3 = int(gray_image[raw][col][2]/range_size)
+                range_id1 = int(rgb_image[raw][col][0]/range_size)
+                range_id2 = int(rgb_image[raw][col][1]/range_size)
+                range_id3 = int(rgb_image[raw][col][2]/range_size)
                 color_dis[0][range_id1] += 1
                 color_dis[1][range_id2] += 1
                 color_dis[2][range_id3] += 1
@@ -77,3 +77,69 @@ class PictureHistogram():
         plt.bar(x[0], color_dis[1], color='g')
         plt.bar(x[0], color_dis[2], color='b')
         plt.show()
+    
+    def calc_cdf(self, color_type='gray', range_size=1):
+        """
+        Brief: calculate cumulative distribution function
+        """
+        range_num = int(256/range_size) if 256 % range_size == 0 else int(256/range_size) + 1
+        if color_type == 'gray':
+            gray_img = np.array(self.trans2gray())
+            x,y = gray_img.shape
+            sum_grid = x * y
+            count_num = np.array([0] * range_num)
+            for raw in range(x):
+                for col in range(y):
+                    count_num[int(gray_img[raw][col]/range_size)] += 1
+            res = []
+            tmp = 0
+            for item in count_num:
+                tmp += item
+                res.append(tmp*1.0/sum_grid)
+            return np.array(res)
+        elif color_type == 'rgb':
+            rgb_img = np.array(self.image)
+            x,y,z = rgb_img.shape
+            sum_grid = x * y
+            color_dis = np.zeros((3,range_num))
+            for raw in range(x):
+                for col in range(y):
+                    range_id1 = int(rgb_img[raw][col][0]/range_size)
+                    range_id2 = int(rgb_img[raw][col][1]/range_size)
+                    range_id3 = int(rgb_img[raw][col][2]/range_size)
+                    color_dis[0][range_id1] += 1
+                    color_dis[1][range_id2] += 1
+                    color_dis[2][range_id3] += 1
+            res = []
+            for i in range(3):
+                tmp = 0
+                tmp_res = []
+                for item in color_dis[i]:
+                    tmp += item
+                    tmp_res.append(tmp * 1.0 / sum_grid)
+                res.append(tmp_res)
+            return np.array(res)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
